@@ -1,0 +1,53 @@
+name: azure-policy-exemption
+on:
+  workflow_dispatch:
+    inputs:
+      subscription_name:
+        description: 'From which subscription we need to provide exemption. the scope'
+        type: string
+        required: true
+      policy_name:
+        description: 'Policy Name to be given Exception to'
+        type: string
+        required: true
+      expires_after:
+        description: 'Policy exemption should be automatically revoked after how long'
+        type: string
+        required: true
+      unit:
+        description: 'Unit of time'
+        required: true
+        type: choice
+        options:
+          - hour
+          - day
+          - month
+run-name: policy exemption for ${{ inputs.policy_name }} for ${{ inputs.expires_after }} ${{ inputs.unit }}
+jobs:
+  azure-policy-exemption:
+    runs-on: ubuntu-latest
+    env:
+      AZURE_CLIENT_ID: ${{ secrets.OWNER_SP_APP_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.OWNER_SP_APP_SECRET }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up python
+        uses: actions/setup-python@v5
+        with:
+            python-version: '3.11'
+
+      - name: Install package mgmt tool
+        run: |
+          pip install poetry
+          poetry install
+
+      - name: Execute program
+        run: |
+          poetry run python3 policy_exception.py --subscription_name "${{ inputs.subscription_name }}" --policy_name "${{ inputs.policy_name }}" --expires_after ${{ inputs.expires_after }} --unit ${{ inputs.unit }}
+
+      - name: Completed
+        run: echo "Program execution completed"
