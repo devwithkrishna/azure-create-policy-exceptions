@@ -1,5 +1,6 @@
 import os
 import argparse
+import streamlit as st
 from dotenv import load_dotenv
 from azure.identity import EnvironmentCredential
 from azure.mgmt.resource.policy.v2022_06_01 import PolicyClient
@@ -17,6 +18,12 @@ class PolicyAssignmentList(BaseModel):
 	policy_definition_id : str
 	scope : str
 
+def get_policies(subscription_id: str):
+    # Retrieve all policies in the subscription
+	credential = EnvironmentCredential()
+	client = PolicyClient(credential=credential, subscription_id=subscription_id)
+	policy_assignment_list = client.policy_assignments.list()
+	return [policy.display_name for policy in policy_assignment_list]
 
 def extract_policy_data(subscription_id: str) -> PolicyAssignmentList:
 	"""
@@ -57,6 +64,7 @@ def verify_policy_is_available(subscription_id:str, policy_name: str):
 		for policy in policy_assignment_list:
 			if policy_name == policy.display_name:
 				print(f"Found policy assignment for '{policy_name}' in scope {subscription_id}")
+				st.write(f"Found policy assignment for '{policy_name}' in scope {subscription_id}")
 				# convert policy obj to dict
 				policy_to_be_exempted = policy.__dict__
 				break  # Exit the loop once the policy is found
@@ -80,12 +88,12 @@ def create_exemption_for_policy(subscription_id: str, policy_name:str, expires_a
 	policy_to_be_exempted = verify_policy_is_available(subscription_id=subscription_id, policy_name=policy_name)
 
 	scope = f"/subscriptions/{subscription_id}"
-
+	st.write(f"Scope of exemption is : /subscriptions/{subscription_id}")
 	policy_exemption_name = f'exemption for {policy_name}' # <policy name> - <yyyy-<month short form>-<day> HH:MM")>
 	print(f'Policy Exemption name will be "{policy_exemption_name}"')
+	st.write(f'Policy Exemption name will be "{policy_exemption_name}"')
 	expiry_date = calculate_expiry(expires_after=expires_after, unit=unit)
 	policy_exemption_description = f'exemption for {policy_name}'
-
 
 	try:
 
@@ -99,6 +107,7 @@ def create_exemption_for_policy(subscription_id: str, policy_name:str, expires_a
 
 		exemption = client.policy_exemptions.create_or_update(scope=scope,policy_exemption_name=policy_exemption_name, parameters=parameters)
 		print("Policy exemption created or updated successfully.")
+		st.write(f"Policy exemption created or updated successfully. Policy Exemption will expire at {expiry_date}")
 		print(f'Policy Exemption will expire at {expiry_date}')
 
 	except HttpResponseError as err:

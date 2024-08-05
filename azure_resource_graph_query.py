@@ -1,5 +1,6 @@
 import azure.mgmt.resourcegraph as arg
 import logging
+import streamlit as st
 from dotenv import load_dotenv
 from azure.identity import EnvironmentCredential
 
@@ -27,6 +28,10 @@ def run_azure_rg_query(subscription_name: str):
     # Run query
     arg_result = arg_client.resources(arg_query)
 
+    if not arg_result.data:
+        # Handle the case where no subscription ID is found
+        st.error(f"No subscription found with the name '{subscription_name}'. Please verify the name and try again.")
+        return None
     subscription_id = arg_result.data[0]['subscriptionId']
     print(f"Subscription ID is : {subscription_id}")
     return subscription_id
@@ -38,7 +43,7 @@ def main():
     """
     load_dotenv()
     logging.info("ARG query being prepared......")
-    run_azure_rg_query(subscription_name="TECH-ARCHITECTS-NONPROD")
+    run_azure_rg_query(subscription_name="TECH-CLOUD-PROD")
     logging.info("ARG query Completed......")
 
 

@@ -17,6 +17,9 @@ or operational needs. Automating the process of creating and managing policy exe
 
 Policy exemption automation simplifies the process of managing exceptions to cloud policies. 
 
+>[!NOTE]
+> Policy Exemptions are applied at Subscription level scope
+
 Here’s a brief overview of how it works:
 
 ## Triggering Automation:
@@ -52,6 +55,26 @@ Use Azure python SDKs to create or update the policy exemption based on the prov
 
 * If value of expires_after is `4` and unit is `month` - the expiration will be after `4 months` of executing the job 
 
+# Streamlit UI
+
+* Using streamlit to Create pythin application 
+
+![policy-exemption-example.jpeg](policy-exemption-example.jpeg)
+
+* Provide valid Subscription Name  
+
+* This returns the Subscription Id corresponding to the Subscription name
+
+* If entered Subscription Name is not found, None value is returned for Subscription Id 
+
+* Once a valid subscription Id is returned using it, it will show us all assigned policies at the subscription level
+
+* Select the policy from dropdown which needs exemption
+
+* Provide a expires after value like 1 or 2 or 10 or 4.5 etc and unit value like day or month or hour.
+
+* Click on Apply Exemption to apply exemption.
+
 # Azure Python SDKs used
 use azure-identity for auth
 
@@ -79,5 +102,5 @@ AZURE_CLIENT_SECRET: one of the service principal's client secrets
 
 >[!TIP]
 > The policy exemption name length must not exceed '64' characters. I am using the same as policy name for exception.
-> You can choose to change it as you see fit
+> You can choose to change it as you see fit 
 
