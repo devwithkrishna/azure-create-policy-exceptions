@@ -95,11 +95,11 @@ def create_exemption_for_policy(subscription_id: str, policy_name:str, expires_a
 				expires_on = expiry_date,
 				display_name = policy_exemption_name,
 				description=policy_exemption_description
-
 			)
 
 		exemption = client.policy_exemptions.create_or_update(scope=scope,policy_exemption_name=policy_exemption_name, parameters=parameters)
 		print("Policy exemption created or updated successfully.")
+		print(f'Policy Exemption will expire at {expiry_date}')
 
 	except HttpResponseError as err:
 		# Handle HTTP response errors

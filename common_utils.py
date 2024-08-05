@@ -8,9 +8,9 @@ def calculate_expiry(expires_after: int, unit: str) -> str:
     now = datetime.now(pytz.utc)  # Get the current time in UTC
 
     if unit == 'day':
-        expiry_date = now + timedelta(days=expires_after)
+        expiry_date = now + timedelta(days=float(expires_after))
     elif unit == 'month':
-        expiry_date = now + relativedelta(months=expires_after)
+        expiry_date = now + relativedelta(months=int(expires_after))
     elif unit == 'hour':
         expiry_date = now + timedelta(hours=float(expires_after))
     else:
