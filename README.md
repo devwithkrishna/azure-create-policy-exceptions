@@ -75,6 +75,15 @@ Use Azure python SDKs to create or update the policy exemption based on the prov
 
 * Click on Apply Exemption to apply exemption.
 
+# Run code locally
+
+* Clone the repository and change direcctory into this
+
+* Install all dependancies using `poetry install`
+
+* Execute `poetry run streamlit run .\streamlit_app.py`
+
+
 # Azure Python SDKs used
 use azure-identity for auth
 
